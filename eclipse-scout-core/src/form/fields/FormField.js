@@ -937,33 +937,6 @@ export default class FormField extends Widget {
     }
   }
 
-  _showContextMenu() {
-    let menus = this.getContextMenuItems();
-    if (menus.length === 0) {
-      // at least one menu item must be visible
-      return;
-    }
-
-    // Make sure tooltip is closed first
-    this._hideStatusMessage();
-
-    this.contextPopup = scout.create('ContextMenuPopup', {
-      parent: this,
-      $anchor: this.$status,
-      menuItems: menus,
-      cloneMenuItems: false,
-      closeOnAnchorMouseDown: false
-    });
-    this.contextPopup.open();
-  }
-
-  _hideContextMenu() {
-    if (this.contextPopup) {
-      this.contextPopup.close();
-      this.contextPopup = null;
-    }
-  }
-
   _renderPreventInitialFocus() {
     this.$container.toggleClass('prevent-initial-focus', !!this.preventInitialFocus);
   }

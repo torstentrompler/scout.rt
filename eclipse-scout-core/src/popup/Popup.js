@@ -428,6 +428,10 @@ export default class Popup extends Widget {
   }
 
   close() {
+    if (this.destroyed || this.destroying) {
+      // Already closed, do nothing
+      return;
+    }
     let event = new Event();
     this.trigger('close', event);
     if (!event.defaultPrevented) {

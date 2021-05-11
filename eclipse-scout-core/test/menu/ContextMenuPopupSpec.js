@@ -86,6 +86,7 @@ describe('ContextMenuPopup', () => {
 
         let menuClone = findClone(popup, menu);
         let childMenuClone = menuClone.childActions[0];
+        popup.animateRemoval = false;
         popup.destroy();
 
         expect(menuClone.destroyed).toBe(true);
