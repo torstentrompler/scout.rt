@@ -55,7 +55,7 @@ export default class GroupBoxLayout extends AbstractLayout {
       ResponsiveManager.get().handleResponsive(this.groupBox, containerSize.width);
     }
 
-    var $status = this._$status();
+    let $status = this._$status();
     if ($status && $status.isVisible()) {
       this._layoutStatus();
       statusWidth = $status.outerWidth(true);

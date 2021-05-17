@@ -15,13 +15,17 @@
     border-color: @navigate-up-button-border-color;
 
     & > .font-icon {
-      color: @navigate-up-button-color;
+      font-size: 18px;
     }
   }
+}
 
-  .menubar > .menubox > &.menu-item.down.menu-button:not(.last) {
-    /* Right and left margin of the navigate buttons should be equal.
-    Setting this margin-right is especially necessary if on the right side of these buttons is another button. */
+.menubar-box > .menu-button.navigate-button {
+  &.up {
+    margin-right: 6px;
+  }
+
+  &.down.left-of-button {
     margin-right: @bench-padding-x;
   }
 }

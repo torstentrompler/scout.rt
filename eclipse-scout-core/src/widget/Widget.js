@@ -2101,6 +2101,9 @@ export default class Widget {
     return null;
   }
 
+  /**
+   * @param {object} [options]
+   */
   _installScrollbars(options) {
     let $scrollable = this.get$Scrollable();
     if (!$scrollable) {
