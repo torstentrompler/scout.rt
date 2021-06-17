@@ -74,7 +74,7 @@ public final class BinaryResourceUrlUtility {
       return "icon/" + iconSpec.getName(); // includes file extension
     }
     LOG.warn("iconId '{}' could not be resolved", iconId);
-    return null; // may happen, when no icon is available for the requested iconName
+    return iconId; // may happen, when no icon is available for the requested iconName
   }
 
   /**

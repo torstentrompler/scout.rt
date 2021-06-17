@@ -96,6 +96,17 @@
     }
   }
 
+  & > svg.icon {
+    fill: currentColor;
+    height: 16px;
+
+    &.stroke,
+    &.stroke .st0,
+    &.stroke .st1 {
+      stroke: currentColor;
+    }
+  }
+
   &.disabled > .icon.image-icon {
     #scout.vendor(filter, grayscale(100%));
     opacity: 0.5;

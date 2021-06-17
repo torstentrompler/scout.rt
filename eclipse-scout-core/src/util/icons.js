@@ -126,6 +126,11 @@ const ICON_ID_REGEX = /\${iconId:([a-zA-Z0-9_.]*)}/;
  */
 export function parseIconId(iconId) {
   let icon = new IconDesc();
+  if (!strings.startsWith(iconId, 'icon/') && !strings.startsWith(iconId, 'icons/') && strings.endsWith(iconId, '.svg')) {
+    icon.iconType = 2;
+    icon.iconUrl = iconId;
+    return icon;
+  }
 
   if (strings.startsWith(iconId, 'font:')) {
     icon.iconType = IconDesc.IconType.FONT_ICON;
