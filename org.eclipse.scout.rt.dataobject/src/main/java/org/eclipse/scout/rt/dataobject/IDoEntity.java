@@ -323,4 +323,48 @@ public interface IDoEntity extends IDataObject {
   default boolean isEmpty() {
     return allNodes().isEmpty();
   }
+
+  /**
+   * Doesn't create the internal contributions node if there is none yet.
+   *
+   * @return An immutable collection of DO entity contributions or an empty list if there a none.
+   */
+  Collection<IDoEntityContribution> getContributions();
+
+  /**
+   * Doesn't create the internal contributions node if there is none yet.
+   *
+   * @return DO entity contribution for this contribution class if available, <code>null</code> otherwise.
+   */
+  <CONTRIBUTION extends IDoEntityContribution> CONTRIBUTION getContribution(Class<CONTRIBUTION> contributionClass);
+
+  /**
+   * Adds a new DO entity contribution. An existing contribution for the same contribution class is overridden.
+   *
+   * @param contribution
+   *          Contribution to add.
+   */
+  <CONTRIBUTION extends IDoEntityContribution> void putContribution(CONTRIBUTION contribution);
+
+  /**
+   * @return Existing DO entity contribution for this contribution class if available, otherwise creates a new DO entity
+   *         contribution instance, adds it to the contributions and returns it.
+   */
+  <CONTRIBUTION extends IDoEntityContribution> CONTRIBUTION contribution(Class<CONTRIBUTION> contributionClass);
+
+  /**
+   * Doesn't create the internal contributions node if there is none yet.
+   *
+   * @return <code>true</code> if the DO entity contribution for this contribution class is available,
+   *         <code>false</code> otherwise.
+   */
+  boolean hasContribution(Class<? extends IDoEntityContribution> contributionClass);
+
+  /**
+   * The internal contribution node is removed if there are no remaining contributions after removal of the given
+   * contribution.
+   *
+   * @return <code>true</code> if the DO entity contribution was available and removed, <code>false</code> otherwise.
+   */
+  boolean removeContribution(Class<? extends IDoEntityContribution> contributionClass);
 }

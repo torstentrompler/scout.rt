@@ -48,6 +48,7 @@ import org.eclipse.scout.rt.dataobject.IDoCollection;
 import org.eclipse.scout.rt.dataobject.IDoEntity;
 import org.eclipse.scout.rt.dataobject.IValueFormatConstants;
 import org.eclipse.scout.rt.jackson.dataobject.fixture.ITestBaseEntityDo;
+import org.eclipse.scout.rt.jackson.dataobject.fixture.OneTestItemContributionDo;
 import org.eclipse.scout.rt.jackson.dataobject.fixture.TestBigIntegerDo;
 import org.eclipse.scout.rt.jackson.dataobject.fixture.TestBinaryDo;
 import org.eclipse.scout.rt.jackson.dataobject.fixture.TestBinaryResourceDo;
@@ -2088,6 +2089,19 @@ public class JsonDataObjectsSerializationTest {
     });
     assertEqualsWithComparisonFailure(itemsMapDo, marshalled);
     assertEquals("foo-id-1", marshalled.genericMapAttribute().get().get("foo-1").getId());
+  }
+
+  @Test
+  public void testSerializeDeserialize_DoEntityWithContributions() throws Exception {
+    TestItemDo doEntity = BEANS.get(TestItemDo.class).withId("123456789");
+    doEntity.contribution(OneTestItemContributionDo.class).withName("my");
+
+    String json = s_dataObjectMapper.writeValueAsString(doEntity);
+    assertJsonEquals("TestDoEntityWithContributions.json", json);
+
+    TestItemDo marshalledDoEntity = s_dataObjectMapper.readValue(json, TestItemDo.class);
+    assertEqualsWithComparisonFailure(doEntity, marshalledDoEntity);
+    assertTrue(doEntity.getNode(DoEntity.CONTRIBUTIONS_ATTRIBUTE_NAME) instanceof DoCollection); // contributions node is always DoCollection
   }
 
   // ------------------------------------ entity with IDoEntity interface definition tests -----------------------------

@@ -10,7 +10,7 @@
  */
 package org.eclipse.scout.rt.dataobject;
 
-import static org.eclipse.scout.rt.platform.util.Assertions.assertNotNull;
+import static org.eclipse.scout.rt.platform.util.Assertions.*;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import org.eclipse.scout.rt.platform.BEANS;
 import org.eclipse.scout.rt.platform.util.Assertions;
@@ -49,6 +50,11 @@ import org.eclipse.scout.rt.platform.util.StreamUtility;
  * </pre>
  */
 public class DoEntity implements IDoEntity {
+
+  /**
+   * Attribute uses a {@link DoCollection} internally because order of elements is not relevant for equality.
+   */
+  public static final String CONTRIBUTIONS_ATTRIBUTE_NAME = "_contributions";
 
   private final Map<String, DoNode<?>> m_attributes = new LinkedHashMap<>();
 
@@ -193,6 +199,103 @@ public class DoEntity implements IDoEntity {
       return (NODE) node;
     }
     return nodeSupplier.get();
+  }
+
+  @Override
+  public Collection<IDoEntityContribution> getContributions() {
+    if (!has(CONTRIBUTIONS_ATTRIBUTE_NAME)) {
+      return Collections.emptyList();
+    }
+
+    return Collections.unmodifiableCollection(getContributionsInternal());
+  }
+
+  @Override
+  public <CONTRIBUTION extends IDoEntityContribution> CONTRIBUTION getContribution(Class<CONTRIBUTION> contributionClass) {
+    validateContributionClass(contributionClass);
+    if (!has(CONTRIBUTIONS_ATTRIBUTE_NAME)) {
+      return null;
+    }
+
+    return getContributionsInternal().stream()
+        .filter(contribution -> contributionClass.equals(contribution.getClass()))
+        .findFirst()
+        .map(contributionClass::cast)
+        .orElse(null);
+  }
+
+  @Override
+  public <CONTRIBUTION extends IDoEntityContribution> void putContribution(CONTRIBUTION contribution) {
+    assertNotNull(contribution, "contribution is required");
+    validateContributionClass(contribution.getClass());
+
+    removeContribution(contribution.getClass());
+    ensureContributionsNode();
+    getContributionsInternal().add(contribution);
+  }
+
+  @Override
+  public <CONTRIBUTION extends IDoEntityContribution> CONTRIBUTION contribution(Class<CONTRIBUTION> contributionClass) {
+    validateContributionClass(contributionClass);
+
+    if (!hasContribution(contributionClass)) {
+      CONTRIBUTION contribution = BEANS.get(contributionClass);
+      putContribution(contribution);
+      return contribution;
+    }
+
+    return getContribution(contributionClass);
+  }
+
+  @Override
+  public boolean hasContribution(Class<? extends IDoEntityContribution> contributionClass) {
+    validateContributionClass(contributionClass);
+    return getContribution(contributionClass) != null;
+  }
+
+  @Override
+  public boolean removeContribution(Class<? extends IDoEntityContribution> contributionClass) {
+    validateContributionClass(contributionClass);
+    if (!has(CONTRIBUTIONS_ATTRIBUTE_NAME)) {
+      return false;
+    }
+
+    Collection<IDoEntityContribution> list = getContributionsInternal();
+    boolean removed = list.removeIf(contribution -> contributionClass.equals(contribution.getClass()));
+    if (list.isEmpty()) {
+      remove(CONTRIBUTIONS_ATTRIBUTE_NAME);
+    }
+    return removed;
+  }
+
+  protected void validateContributionClass(Class<? extends IDoEntityContribution> contributionClass) {
+    assertNotNull(contributionClass, "contributionClass is required");
+    ContributesTo contributesToAnn = contributionClass.getAnnotation(ContributesTo.class);
+    assertTrue(contributesToAnn != null && contributesToAnn.value() != null, "Contribution class {} is missing a valid {} annotation", contributionClass, ContributesTo.class.getSimpleName());
+    Class<? extends IDoEntity>[] containers = contributesToAnn.value();
+    assertTrue(Stream.of(containers).anyMatch(containerClass -> containerClass.isInstance(this)), "{} is not a valid container class of {}", this.getClass().getSimpleName(), contributionClass.getSimpleName());
+  }
+
+  /**
+   * Ensures that the contributions node ({@link #CONTRIBUTIONS_ATTRIBUTE_NAME}) exists (i.e. creates it if it doesn't
+   * exist yet).
+   */
+  protected void ensureContributionsNode() {
+    if (!has(CONTRIBUTIONS_ATTRIBUTE_NAME)) {
+      putNode(CONTRIBUTIONS_ATTRIBUTE_NAME, new DoCollection<IDoEntityContribution>());
+    }
+  }
+
+  /**
+   * Only call this method if the attribute node is available (e.g. call {@link #ensureContributionsNode()} before if
+   * desired or check for node existance manually).
+   *
+   * @return A mutable collection of DO entity contribution of corresponding {@link DoCollection} node.
+   */
+  protected Collection<IDoEntityContribution> getContributionsInternal() {
+    assertTrue(has(CONTRIBUTIONS_ATTRIBUTE_NAME), "Attribute node for DO entity contributions is missing");
+    //noinspection unchecked
+    return ((DoCollection<IDoEntityContribution>) Assertions.assertType(getNode(CONTRIBUTIONS_ATTRIBUTE_NAME), DoCollection.class)).get();
   }
 
   @Override

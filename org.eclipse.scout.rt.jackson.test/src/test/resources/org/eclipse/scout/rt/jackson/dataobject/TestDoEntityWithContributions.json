@@ -1,0 +1,8 @@
+{
+  "_type" : "TestItem",
+  "_contributions" : [ {
+    "_type" : "OneTestItemContribution",
+    "name" : "my"
+  } ],
+  "id" : "123456789"
+}

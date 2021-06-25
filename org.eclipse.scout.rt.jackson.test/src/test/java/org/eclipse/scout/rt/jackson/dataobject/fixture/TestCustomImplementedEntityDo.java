@@ -30,6 +30,7 @@ import org.eclipse.scout.rt.dataobject.DoNode;
 import org.eclipse.scout.rt.dataobject.DoSet;
 import org.eclipse.scout.rt.dataobject.DoValue;
 import org.eclipse.scout.rt.dataobject.IDoEntity;
+import org.eclipse.scout.rt.dataobject.IDoEntityContribution;
 import org.eclipse.scout.rt.dataobject.IValueFormatConstants;
 import org.eclipse.scout.rt.dataobject.TypeName;
 import org.eclipse.scout.rt.dataobject.ValueFormat;
@@ -117,6 +118,36 @@ public class TestCustomImplementedEntityDo implements IDoEntity {
   @Override
   public Map<String, ?> all() {
     return allNodes().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().get()));
+  }
+
+  @Override
+  public Collection<IDoEntityContribution> getContributions() {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public <CONTRIBUTION extends IDoEntityContribution> CONTRIBUTION getContribution(Class<CONTRIBUTION> contributionClass) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public <CONTRIBUTION extends IDoEntityContribution> void putContribution(CONTRIBUTION contribution) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public <CONTRIBUTION extends IDoEntityContribution> CONTRIBUTION contribution(Class<CONTRIBUTION> contributionClass) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public boolean hasContribution(Class<? extends IDoEntityContribution> contributionClass) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public boolean removeContribution(Class<? extends IDoEntityContribution> contributionClass) {
+    throw new UnsupportedOperationException();
   }
 
   @Override

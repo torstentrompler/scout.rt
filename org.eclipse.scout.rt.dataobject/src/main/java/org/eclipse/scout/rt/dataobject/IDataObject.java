@@ -14,7 +14,8 @@ package org.eclipse.scout.rt.dataobject;
  * Marker interface for a data object.
  * <p>
  * Object-like data objects are represented using {@link IDoEntity} interface, {@link DoEntity} default implementation
- * and its subclasses, collection-like data objects are represented using {@link DoList}.
+ * and its subclasses, collection-like data objects are represented using {@link DoList}, {@link DoSet} or
+ * {@link DoCollection}.
  * <p>
  * Use this interface for deserialize any data object, whose content is not further specified, e.g:
  *

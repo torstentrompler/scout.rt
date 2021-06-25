@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 /**
  * Interface for a generic collection of values of type {@code V} inside a {@link DoEntity} object.
  */
-public interface IDoCollection<V, COLLECTION extends Collection<V>> extends Iterable<V> {
+public interface IDoCollection<V, COLLECTION extends Collection<V>> extends IDataObject, Iterable<V> {
 
   /**
    * @return {@code true} if this attribute is part of a {@link DoEntity}, otherwise {@code false}.
@@ -30,7 +30,7 @@ public interface IDoCollection<V, COLLECTION extends Collection<V>> extends Iter
   /**
    * @return modifiable collection of all items, never {@code null}.
    */
-  public COLLECTION get();
+  COLLECTION get();
 
   /**
    * Returns <code>true</code> if this collection contains the item, <code>false</code> otherwise.

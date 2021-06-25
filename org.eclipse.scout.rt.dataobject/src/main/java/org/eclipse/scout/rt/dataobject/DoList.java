@@ -22,7 +22,7 @@ import java.util.function.Consumer;
  * @see DoEntity#doList(String) creator method
  */
 @SuppressWarnings("squid:S2333") // redundant final
-public final class DoList<V> extends AbstractDoCollection<V, List<V>> implements IDataObject {
+public final class DoList<V> extends AbstractDoCollection<V, List<V>> {
 
   public DoList() {
     this(null, null);

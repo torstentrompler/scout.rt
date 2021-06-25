@@ -195,10 +195,10 @@ public class DoEntityDeserializer extends StdDeserializer<IDoEntity> {
 
   protected JavaType findResolvedAttributeType(IDoEntity entityInstance, String attributeName, boolean isObject, boolean isArray) {
     return m_doEntityDeserializerTypeResolver.resolveAttributeType(entityInstance.getClass(), attributeName)
-        .orElseGet(() -> findResolvedFallbackAttributeType(isObject, isArray));
+        .orElseGet(() -> findResolvedFallbackAttributeType(attributeName, isObject, isArray));
   }
 
-  protected JavaType findResolvedFallbackAttributeType(boolean isObject, boolean isArray) {
+  protected JavaType findResolvedFallbackAttributeType(String attributeName, boolean isObject, boolean isArray) {
     if (DoMapEntity.class.isAssignableFrom(m_handledClass)) {
       // DoMapEntity<T> structure is deserialized as typed Map<String, T>
       return findResolvedDoMapEntityType();
@@ -209,7 +209,8 @@ public class DoEntityDeserializer extends StdDeserializer<IDoEntity> {
     }
     else if (isArray) {
       // array-like JSON structure is deserialized as raw DoList (using DoList as generic structure instead of DoSet or DoCollection)
-      return TypeFactory.defaultInstance().constructType(DoList.class);
+      // Exception: internal node _contributions is deserialized using a DoCollection
+      return TypeFactory.defaultInstance().constructType(DoEntity.CONTRIBUTIONS_ATTRIBUTE_NAME.equals(attributeName) ? DoCollection.class : DoList.class);
     }
     else {
       // JSON scalar values are deserialized as raw object using default jackson typing

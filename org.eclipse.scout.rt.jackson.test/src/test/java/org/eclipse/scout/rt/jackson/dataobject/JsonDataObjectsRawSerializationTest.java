@@ -73,6 +73,12 @@ public class JsonDataObjectsRawSerializationTest {
   }
 
   @Test
+  public void testDoEntityWithContributions() {
+    DoEntity doEntity = (DoEntity) testRawDataObjectMapper("TestDoEntityWithContributions.json");
+    assertTrue(doEntity.getNode(DoEntity.CONTRIBUTIONS_ATTRIBUTE_NAME) instanceof DoCollection); // even when using raw deserialization, contributions node is always DoCollection
+  }
+
+  @Test
   public void testVersionedDo() {
     TestVersionedDo versioned = BEANS.get(TestVersionedDo.class).withName("lorem");
     String json = s_dataObjectMapper.writeValue(versioned);
@@ -106,10 +112,11 @@ public class JsonDataObjectsRawSerializationTest {
     assertEquals("str2", ((DoEntity) item).get("stringAttribute"));
   }
 
-  protected void testRawDataObjectMapper(String jsonFileName) {
+  protected IDataObject testRawDataObjectMapper(String jsonFileName) {
     String json = readResourceAsString(jsonFileName);
     IDataObject object = s_dataObjectMapper.readValueRaw(json);
     assertNoTypes(object);
+    return object;
   }
 
   /**
