@@ -1,0 +1,61 @@
+INFO: 57 files found in folder C:/dev/intellij/22.0/org.eclipse.scout.rt/org.eclipse.scout.rt.ui.html/src/icons
+INFO: File not accepted: uE003-calendar-bold.svg
+INFO: File not accepted: uE004-clock-bold.svg
+INFO: File not accepted: uE005-checked-bold.svg
+INFO: File not accepted: uE025-sum-bold.svg
+INFO: File not accepted: uE026-avg-bold.svg
+INFO: File not accepted: uE027-max-bold.svg
+INFO: File not accepted: uE028-min-bold.svg
+INFO: File not accepted: uE032-star-bold.svg
+INFO: File not accepted: uE033-star-solid.svg
+INFO: File not accepted: uE034-person-solid.svg
+INFO: File not accepted: uE042-search-bold.svg
+INFO: File not accepted: uE043-folder-bold.svg
+INFO: File not accepted: uE045-remove-bold.svg
+INFO: File not accepted: uE04B-pencil-bold.svg
+INFO: File not accepted: uE04F-pencil-solid.svg
+INFO: File not accepted: uE060-exclamation-mark-bold.svg
+INFO: 41 files accepted.
+INFO: uE001-exclamation-mark-circle.svg: Successfully processed.
+INFO: uE002-info.svg: Successfully processed.
+INFO: uE006-group.svg: Successfully processed.
+INFO: uE007-group-plus.svg: Successfully processed.
+INFO: uE008-ellipsis-circle.svg: Successfully processed.
+INFO: uE009-group-remove.svg: Successfully processed.
+INFO: uE010-angle-double-left.svg: Successfully processed.
+INFO: uE011-angle-double-right.svg: Successfully processed.
+INFO: uE012-angle-left.svg: Successfully processed.
+INFO: uE013-angle-right.svg: Successfully processed.
+INFO: uE014-angle-down.svg: Successfully processed.
+INFO: uE015-angle-up.svg: Successfully processed.
+INFO: uE016-long-arrow-down.svg: Successfully processed.
+INFO: uE017-long-arrow-up.svg: Successfully processed.
+INFO: uE018-long-arrow-down-plus.svg: Successfully processed.
+INFO: uE019-long-arrow-up-plus.svg: Successfully processed.
+INFO: uE01A-minus.svg: Successfully processed.
+INFO: uE01B-plus.svg: Successfully processed.
+INFO: uE01C-list.svg: Successfully processed.
+INFO: uE01D-long-arrow-down-remove.svg: Successfully processed.
+INFO: uE01E-long-arrow-up-remove.svg: Successfully processed.
+INFO: uE01F-filter-remove.svg: Successfully processed.
+INFO: uE020-target.svg: Successfully processed.
+INFO: uE021-world.svg: Successfully processed.
+INFO: uE022-chart.svg: Successfully processed.
+INFO: uE029-calendar.svg: Successfully processed.
+INFO: uE02A-search.svg: Successfully processed.
+INFO: uE02B-folder.svg: Successfully processed.
+INFO: uE02C-sum.svg: Successfully processed.
+INFO: uE02D-star.svg: Successfully processed.
+INFO: uE02E-star-marked.svg: Successfully processed.
+INFO: uE02F-pencil.svg: Successfully processed.
+INFO: uE031-gear.svg: Successfully processed.
+INFO: uE035-remove.svg: Successfully processed.
+INFO: uE036-expand-all.svg: Successfully processed.
+INFO: uE037-collapse-all.svg: Successfully processed.
+INFO: uE038-min.svg: Successfully processed.
+INFO: uE039-max.svg: Successfully processed.
+INFO: uE03A-average.svg: Successfully processed.
+INFO: uE041-ellipsis-v.svg: Successfully processed.
+INFO: uE059-category.svg: Successfully processed.
+
+INFO: Script finished with 0 errors. Duration: 111.918s
