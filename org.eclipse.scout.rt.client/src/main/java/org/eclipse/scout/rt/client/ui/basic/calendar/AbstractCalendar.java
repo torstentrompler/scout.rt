@@ -884,12 +884,12 @@ public abstract class AbstractCalendar extends AbstractWidget implements ICalend
     }
 
     @Override
-    public void fireComponentMoveFromUI(CalendarComponent comp, Date newDate) {
+    public void fireComponentMoveFromUI(CalendarComponent comp, Date fromDate, Date toDate) {
       try {
         pushUIProcessor();
         comp = resolveComponent(comp);
         if (comp != null) {
-          comp.getProvider().onItemMoved(comp.getItem(), newDate);
+          comp.getProvider().onItemMoved(comp.getItem(), fromDate, toDate);
         }
         fireCalendarComponentAction();
       }

@@ -241,12 +241,13 @@ public class JsonCalendar<CALENDAR extends ICalendar> extends AbstractJsonWidget
 
   protected void handleUiComponentMove(JsonEvent event) {
     JSONObject data = event.getData();
-    Date newDate = toJavaDate(data, "newDate");
-    String componentId = data.optString("component", null);
+    Date fromDate = toJavaDate(data, "fromDate");
+    Date toDate = toJavaDate(data, "toDate");
+    String componentId = data.optString("componentId", null);
 
     JsonCalendarComponent<CalendarComponent> component = resolveCalendarComponent(componentId);
     if (component != null) {
-      getModel().getUIFacade().fireComponentMoveFromUI(component.getModel(), newDate);
+      getModel().getUIFacade().fireComponentMoveFromUI(component.getModel(), fromDate, toDate);
     }
     else if (componentId != null) {
       LOG.info("Unkown component with ID {} [event='{}']", componentId, EVENT_COMPONENT_MOVE);
