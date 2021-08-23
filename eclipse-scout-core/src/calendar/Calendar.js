@@ -30,6 +30,7 @@ import {
   Widget
 } from '../index';
 import $ from 'jquery';
+import MyViewportScroller from './MyViewportScroller';
 
 export default class Calendar extends Widget {
 
@@ -1302,11 +1303,6 @@ export default class Calendar extends Widget {
   }
 
   _onMouseDown(event) {
-    // Month-Mode is not supported yet
-    if (this._isMonth()) {
-      return;
-    }
-
     if (this._moveData) {
       // Do nothing, when dragging is already in progress. This can happen when the user leaves
       // the browser window (e.g. using Alt-Tab) while holding the mouse button pressed and
@@ -1318,7 +1314,7 @@ export default class Calendar extends Widget {
     // component has to be marked as draggable by the backend
     // dragging of fullDay components is not supported yet
     // dragging of components spanning more than one day is not supported yet
-    if (!component || !component.draggable || component.fullDay || component._$parts.length > 1) {
+    if (!component || !component.draggable || (!this._isMonth() && component.fullDay) || component._$parts.length > 1) {
       return;
     }
 
@@ -1342,7 +1338,6 @@ export default class Calendar extends Widget {
   }
 
   _onMouseMove(event) {
-    console.log('Calendar._onMouseMove');
     events.fixTouchEvent(event);
 
     this._moveData.event = event;
@@ -1351,15 +1346,37 @@ export default class Calendar extends Widget {
       event.pageY - this._moveData.containerOffset.top + this._moveData.containerScrollPosition.y
     );
 
-    // this._scrollViewportWhileDragging(event);
+    this._scrollViewportWhileDragging(event);
 
     if (this._moveData.onMove && !this._moveData.cancelled) {
       this._moveData.onMove(event);
     }
   }
 
+  _scrollViewportWhileDragging(event, options) {
+    if (!this._moveData || this._moveData.mode === 'pan' || this._moveData.cancelled) {
+      return;
+    }
+
+    if (!this._moveData.viewportScroller) {
+      this._moveData.viewportScroller = new MyViewportScroller({
+        viewportWidth: this.$grid.width(),
+        viewportHeight: this.$grid.height(),
+        active: () => !!this._moveData,
+        scroll: (dx, dy) => {
+          let newScrollTop = this.get$Scrollable().scrollTop() + dy;
+          scrollbars.scrollTop(this.get$Scrollable(), newScrollTop);
+          this._moveData.containerScrollPosition = new Point(this.get$Scrollable().scrollLeft(), this.get$Scrollable().scrollTop());
+        }
+      });
+    }
+
+    // Mouse position (viewport-relative coordinates) in pixel
+    let mouse = this._moveData.currentCursorPosition.subtract(this._moveData.containerScrollPosition);
+    this._moveData.viewportScroller.update(mouse);
+  }
+
   _onMouseUp(event) {
-    console.log('Calendar._onMouseUp');
     this.$window
       .off('mousemove touchmove', this._mouseMoveHandler)
       .off('mouseup touchend touchcancel', this._mouseUpHandler);
@@ -1379,8 +1396,11 @@ export default class Calendar extends Widget {
 
     // Prepare for dragging
     this._moveData.component = component;
-    this._moveData.logicalX = component._$parts[0].parent().data().day;
+    this._moveData.logicalX = component._$parts[0].closest('.calendar-day').data().day;
     this._moveData.logicalY = Math.round(component._$parts[0].position().top) / this.heightPerDivision;
+    if (this._isMonth()) {
+      this._moveData.logicalY = component._$parts[0].closest('.calendar-day').data().week;
+    }
 
     // Mark blocks as "dragging" after a short timeout (to prevent shaky animations on single click)
     this._moveData.draggingTimeoutId = setTimeout(() => {
@@ -1435,9 +1455,11 @@ export default class Calendar extends Widget {
 
     // Limit logical distance
     let minX = 1;
-    let minY = 0;
+    let minY = this._isMonth() ? 1 : 0;
     let maxX = this._isWorkWeek() ? this.workDayIndices.length : 7;
-    let maxY = (24 * this.numberOfHourDivisions) - Math.ceil(this._moveData.component.getLengthInHoursDecimal() * this.numberOfHourDivisions);
+    let maxY = this._isMonth() ?
+      this.monthViewNumberOfWeeks :
+      (24 * this.numberOfHourDivisions) - Math.ceil(this._moveData.component.getLengthInHoursDecimal() * this.numberOfHourDivisions);
 
     function limitDistance(newPosition) {
       let newX = newPosition.x;
@@ -1493,12 +1515,19 @@ export default class Calendar extends Widget {
       if (moved) {
         let appointmentToDate = dates.parseJsonDate(component.toDate);
         let appointmentFromDate = dates.parseJsonDate(component.fromDate);
-        let timeDiff = this._hourMinuteByDivision(diffY);
 
-        appointmentFromDate = dates.shiftTime(appointmentFromDate, timeDiff.hour, timeDiff.minute);
-        appointmentFromDate = dates.shift(appointmentFromDate, 0, 0, diffX);
-        appointmentToDate = dates.shiftTime(appointmentToDate, timeDiff.hour, timeDiff.minute);
-        appointmentToDate = dates.shift(appointmentToDate, 0, 0, diffX);
+        let daysShift = diffX;
+        if (this._isMonth()) {
+          // in month mode the y-axis is a shit in weeks
+          daysShift += diffY * 7;
+        } else {
+          // time difference (y-axis) only if we are not in month mode
+          let timeDiff = this._hourMinuteByDivision(diffY);
+          appointmentFromDate = dates.shiftTime(appointmentFromDate, timeDiff.hour, timeDiff.minute);
+          appointmentToDate = dates.shiftTime(appointmentToDate, timeDiff.hour, timeDiff.minute);
+        }
+        appointmentFromDate = dates.shift(appointmentFromDate, 0, 0, daysShift);
+        appointmentToDate = dates.shift(appointmentToDate, 0, 0, daysShift);
 
         component.fromDate = this._format(appointmentFromDate, 'yyyy-MM-dd HH:mm:ss.SSS');
         component.toDate = this._format(appointmentToDate, 'yyyy-MM-dd HH:mm:ss.SSS');
@@ -1519,18 +1548,33 @@ export default class Calendar extends Widget {
     } else {
       logicalPosition = new Point(vararg, y);
     }
-
-    if (component._$parts[0].parent().data('day') !== logicalPosition.x) {
-      component._$parts[0].detach().appendTo($('.calendar-week:not(.hidden) > .calendar-day')
-        .filter(function() {
-          return $(this).data('day') === logicalPosition.x;
-        }));
-    }
+    let currDay = component._$parts[0].closest('.calendar-day').data('day');
+    let currWeek = component._$parts[0].closest('.calendar-day').data('week');
 
     if (component.rendered) {
-      // Set new position without animation
-      let pos = this._dayPositionByDivision(logicalPosition.y) + '%';
-      component._$parts[0].css('top', pos);
+      if (this._isMonth()) {
+        if (currDay !== logicalPosition.x || currWeek !== logicalPosition.y) {
+          let newContainer =
+            $('.calendar-week:not(.hidden) > .calendar-day')
+              .filter(function() {
+                return $(this).data('day') === logicalPosition.x &&
+                  $(this).data('week') === logicalPosition.y;
+              });
+          let csc = newContainer.find('.calendar-scrollable-components');
+          newContainer = csc.length > 0 ? csc : newContainer;
+          component._$parts[0].detach().appendTo(newContainer);
+        }
+      } else {
+        if (currDay !== logicalPosition.x) {
+          component._$parts[0].detach().appendTo($('.calendar-week:not(.hidden) > .calendar-day')
+            .filter(function() {
+              return $(this).data('day') === logicalPosition.x;
+            }));
+        }
+
+        let pos = this._dayPositionByDivision(logicalPosition.y) + '%';
+        component._$parts[0].css('top', pos);
+      }
     }
   }
 
@@ -1554,7 +1598,13 @@ export default class Calendar extends Widget {
       moveData.cancelled = true;
     };
 
-    moveData.containerOffset = this.$container.offset();
+    moveData.unitX = this.widthPerDivision;
+    moveData.unitY = this.heightPerDivision;
+    if (this._isMonth()) {
+      moveData.unitY = $(event.target).closest('.calendar-day').height();
+    }
+
+    moveData.containerOffset = this.$grid.offset();
     moveData.containerScrollPosition = new Point(this.get$Scrollable().scrollLeft(), this.get$Scrollable().scrollTop());
 
     moveData.startCursorPosition = new Point(
@@ -1574,9 +1624,14 @@ export default class Calendar extends Widget {
     } else {
       pixelPosition = new Point(vararg, y);
     }
+
+    if (this._isDay()) {
+      pixelPosition.x = 0;
+    }
+
     return new Point(
-      numbers.round(this._isDay() ? 0 : pixelPosition.x / this.widthPerDivision, roundingMode),
-      numbers.round(pixelPosition.y / this.heightPerDivision, roundingMode)
+      numbers.round(pixelPosition.x / this._moveData.unitX, roundingMode),
+      numbers.round(pixelPosition.y / this._moveData.unitY, roundingMode)
     );
   }
 
