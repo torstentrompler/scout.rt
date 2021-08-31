@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2020 BSI Business Systems Integration AG.
+ * Copyright (c) 2010-2021 BSI Business Systems Integration AG.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -522,7 +522,7 @@ public class JsonDataObjectsSerializationTest {
     assertArrayEquals(content, marshalled.getContent());
 
     // read object as raw Map<String, String> object
-    Map<String, String> rawObject = s_dataObjectMapper.readValue(json, new TypeReference<Map<String, String>>() {
+    Map<String, String> rawObject = s_dataObjectMapper.readValue(json, new TypeReference<>() {
     });
     String base64encoded = Base64Utility.encode(content);
     assertEquals(base64encoded, rawObject.get("content"));
@@ -1182,7 +1182,7 @@ public class JsonDataObjectsSerializationTest {
   public void testDeserialize_TestItemDoListAsObjectList() throws Exception {
     String json = readResourceAsString("TestItemDoCollection.json");
     // read value as raw DoList without concrete bind type information
-    DoList<TestItemDo> testDo = s_dataObjectMapper.readValue(json, new TypeReference<DoList<TestItemDo>>() {
+    DoList<TestItemDo> testDo = s_dataObjectMapper.readValue(json, new TypeReference<>() {
     });
     assertEquals("foo", testDo.get(0).getId());
     assertEquals("bar", testDo.get(0).getStringAttribute());
@@ -1589,7 +1589,7 @@ public class JsonDataObjectsSerializationTest {
     String json = s_dataObjectMapper.writeValueAsString(mapDo); // write TestDoMapEntityDo as DoEntity to exclude writing the _type property
 
     // read object as raw Map<String, String> object
-    TypeReference<Map<String, TestItemDo>> typeRef = new TypeReference<Map<String, TestItemDo>>() {
+    TypeReference<Map<String, TestItemDo>> typeRef = new TypeReference<>() {
     };
     Map<String, TestItemDo> marshalled = s_dataObjectMapper.readValue(json, typeRef);
     assertEqualsWithComparisonFailure(mapDo.get("mapAttribute1", IDoEntity.class), marshalled.get("mapAttribute1"));
@@ -1641,7 +1641,7 @@ public class JsonDataObjectsSerializationTest {
     String json = s_dataObjectMapper.writeValueAsString(mapDo); // write TestDoMapEntityDo as DoEntity to exclude writing the _type property
 
     // read object as raw Map<String, String> object
-    TypeReference<Map<String, List<TestItemDo>>> typeRef = new TypeReference<Map<String, List<TestItemDo>>>() {
+    TypeReference<Map<String, List<TestItemDo>>> typeRef = new TypeReference<>() {
     };
     Map<String, List<TestItemDo>> marshalled = s_dataObjectMapper.readValue(json, typeRef);
     assertEquals("value-1a", marshalled.get("mapAttribute1").get(0).getStringAttribute());
@@ -1972,7 +1972,7 @@ public class JsonDataObjectsSerializationTest {
     assertJsonEquals("TestGenericWithComplexValueDo.json", json);
 
     // read value with complete generic type definition
-    TestGenericDo<TestItemDo> marshalled = s_dataObjectMapper.readValue(json, new TypeReference<TestGenericDo<TestItemDo>>() {
+    TestGenericDo<TestItemDo> marshalled = s_dataObjectMapper.readValue(json, new TypeReference<>() {
     });
     assertEqualsWithComparisonFailure(itemValueDo, marshalled);
     assertEquals("foo-id", marshalled.getGenericAttribute().getId());
@@ -2005,7 +2005,7 @@ public class JsonDataObjectsSerializationTest {
     String json = s_dataObjectMapper.writeValueAsString(genericDo);
     assertJsonEquals("TestEntityWithGenericComplexValuesDo.json", json);
 
-    TestEntityWithGenericValuesDo marshalled = s_dataObjectMapper.readValue(json, new TypeReference<TestEntityWithGenericValuesDo>() {
+    TestEntityWithGenericValuesDo marshalled = s_dataObjectMapper.readValue(json, new TypeReference<>() {
     });
     assertEqualsWithComparisonFailure(genericDo, marshalled);
     assertEquals("foo-id", marshalled.getGenericAttribute().get("genericAttribute", TestItemDo.class).getId());
@@ -2023,7 +2023,7 @@ public class JsonDataObjectsSerializationTest {
     String json = s_dataObjectMapper.writeValueAsString(itemsValueDo);
     assertJsonEquals("TestGenericWithListValueDo.json", json);
 
-    TestGenericDo<List<TestItemDo>> marshalled = s_dataObjectMapper.readValue(json, new TypeReference<TestGenericDo<List<TestItemDo>>>() {
+    TestGenericDo<List<TestItemDo>> marshalled = s_dataObjectMapper.readValue(json, new TypeReference<>() {
     });
     // Marshaled class is not equals to serialized class, since List<TestItemDo> is deserialized to DoList<TestItemDo>. Compare only the List<TestItemDo> content.
     assertEqualsWithComparisonFailure(items, marshalled.get("genericAttribute"));
@@ -2044,7 +2044,7 @@ public class JsonDataObjectsSerializationTest {
     assertJsonEquals("TestGenericWithListAttributeDo.json", json);
 
     // read value with complete generic type definition
-    TestGenericDo<TestItemDo> marshalled = s_dataObjectMapper.readValue(json, new TypeReference<TestGenericDo<TestItemDo>>() {
+    TestGenericDo<TestItemDo> marshalled = s_dataObjectMapper.readValue(json, new TypeReference<>() {
     });
     assertEqualsWithComparisonFailure(itemsDo, marshalled);
     assertEquals("foo-id-1", marshalled.getGenericListAttribute().get(0).getId());
@@ -2075,7 +2075,7 @@ public class JsonDataObjectsSerializationTest {
     String json = s_dataObjectMapper.writeValueAsString(itemsMapDo);
     assertJsonEquals("TestGenericWithMapValueDo.json", json);
 
-    TestGenericDo<Map<String, TestItemDo>> marshalled = s_dataObjectMapper.readValue(json, new TypeReference<TestGenericDo<Map<String, TestItemDo>>>() {
+    TestGenericDo<Map<String, TestItemDo>> marshalled = s_dataObjectMapper.readValue(json, new TypeReference<>() {
     });
     // Marshaled class is not equals to serialized class, since Map<String, TestItemDo> is deserialized to a DoEntity. Compare the expected map with all attribute values.
     assertEqualsWithComparisonFailure(map, marshalled.get("genericAttribute", DoEntity.class).all());
@@ -2093,7 +2093,7 @@ public class JsonDataObjectsSerializationTest {
     String json = s_dataObjectMapper.writeValueAsString(itemsMapDo);
     assertJsonEquals("TestGenericDoEntityMapDo.json", json);
 
-    TestGenericDoEntityMapDo<Map<String, TestItemDo>> marshalled = s_dataObjectMapper.readValue(json, new TypeReference<TestGenericDoEntityMapDo<Map<String, TestItemDo>>>() {
+    TestGenericDoEntityMapDo<Map<String, TestItemDo>> marshalled = s_dataObjectMapper.readValue(json, new TypeReference<>() {
     });
     assertEqualsWithComparisonFailure(itemsMapDo, marshalled);
     assertEquals("foo-id-1", marshalled.genericMapAttribute().get().get("foo-1").getId());
@@ -2526,15 +2526,8 @@ public class JsonDataObjectsSerializationTest {
         .withOptStringList(Optional.empty(), Optional.ofNullable("foo"));
     String json = s_dataObjectMapper.writeValueAsString(optional);
 
-    // TODO [22.0] pbz remove when JDK 8 is no longer supported
-    if ("1.8".equals(System.getProperty("java.specification.version"))) {
-      // currently serializable using Scout Jackson implementation, but without values, e.g. useless!
-      assertJsonEquals("TestOptionalDoJdk8.json", json);
-    }
-    else {
-      // currently serializable using Scout Jackson implementation, but without values, e.g. useless!
-      assertJsonEquals("TestOptionalDo.json", json);
-    }
+    // currently serializable using Scout Jackson implementation, but without values, e.g. useless!
+    assertJsonEquals("TestOptionalDo.json", json);
 
     // currently not deserializable using Scout Jackson implementation
     assertThrows(UnrecognizedPropertyException.class, () -> s_dataObjectMapper.readValue(json, TestOptionalDo.class));
@@ -2548,7 +2541,7 @@ public class JsonDataObjectsSerializationTest {
     LookupResponse<FixtureHierarchicalLookupRowDo> response = LookupResponse.create(Arrays.asList(parent, rowA, rowB));
     String json = s_dataObjectMapper.writeValueAsString(response);
 
-    LookupResponse<FixtureHierarchicalLookupRowDo> marshalled = s_dataObjectMapper.readValue(json, new TypeReference<LookupResponse<FixtureHierarchicalLookupRowDo>>() {
+    LookupResponse<FixtureHierarchicalLookupRowDo> marshalled = s_dataObjectMapper.readValue(json, new TypeReference<>() {
     });
     assertEquals(parent, marshalled.getRows().get(0));
     assertEquals(rowA, marshalled.getRows().get(1));
