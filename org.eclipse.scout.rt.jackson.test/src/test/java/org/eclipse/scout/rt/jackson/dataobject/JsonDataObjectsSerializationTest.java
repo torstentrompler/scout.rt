@@ -693,7 +693,7 @@ public class JsonDataObjectsSerializationTest {
 
     // raw properties got default JSON->Java conversion types
     assertEquals(Integer.valueOf(123456), entity.get("bigIntegerAttribute"));
-    assertEquals(Double.valueOf(789.0), entity.get("bigDecimalAttribute"));
+    assertEquals(new BigDecimal("789.0"), entity.get("bigDecimalAttribute"));
     assertEquals("2017-09-22 14:23:12.123", entity.get("dateAttribute"));
 
     // assert "null" values raw
@@ -781,7 +781,7 @@ public class JsonDataObjectsSerializationTest {
     // raw properties got default JSON->Java conversion types
     assertEquals(Integer.valueOf(123456), entity.getNode("bigIntegerAttribute").get());
     assertEquals(Integer.valueOf(42), entity.getNode("numberAttribute").get());
-    assertEquals(Double.valueOf(789.0), entity.getNode("bigDecimalAttribute").get());
+    assertEquals(new BigDecimal("789.0"), entity.getNode("bigDecimalAttribute").get());
     assertEquals("2017-09-22 14:23:12.123", entity.getNode("dateAttribute").get());
 
     // use accessor methods to convert value to specific type
@@ -807,8 +807,8 @@ public class JsonDataObjectsSerializationTest {
     assertEquals(expected.getStringListAttribute(), entity.getList("stringListAttribute", String.class));
 
     // floating point values are converted to Double
-    assertEquals(expected.getFloatAttribute().floatValue(), entity.get("floatAttribute", Double.class).floatValue(), 0);
-    assertEquals(expected.getBigDecimalAttribute(), NumberUtility.toBigDecimal(entity.get("bigDecimalAttribute", Double.class)));
+    assertEquals(expected.getFloatAttribute().floatValue(), entity.get("floatAttribute", BigDecimal.class).floatValue(), 0);
+    assertEquals(expected.getBigDecimalAttribute(), entity.get("bigDecimalAttribute", BigDecimal.class));
     assertEquals(expected.getBigDecimalAttribute(), entity.getDecimal("bigDecimalAttribute"));
     // short integer/long values are converted to Integer
     assertEquals(expected.getBigIntegerAttribute(), NumberUtility.toBigInteger(entity.get("bigIntegerAttribute", Integer.class).longValue()));
@@ -1345,7 +1345,7 @@ public class JsonDataObjectsSerializationTest {
     assertEquals("list-item-2", doMarshalled.get("attribute1", List.class).get(1));
 
     assertEquals(123, doMarshalled.get("attribute2", List.class).get(0));
-    assertEquals(45.69, doMarshalled.get("attribute2", List.class).get(1));
+    assertEquals(new BigDecimal("45.69"), doMarshalled.get("attribute2", List.class).get(1));
 
     List<UUID> attribute3 = doMarshalled.getList("attribute3", item -> UUID.fromString((String) item));
     assertEquals(UUID_1, attribute3.get(0));
@@ -1458,7 +1458,7 @@ public class JsonDataObjectsSerializationTest {
     DoEntity attribute1 = marshalled.get("mapAttribute1", DoEntity.class);
     assertEquals("value", attribute1.get("key"));
     DoEntity attribute2 = marshalled.get("mapAttribute2", DoEntity.class);
-    assertEquals(45.69, attribute2.get("123"));
+    assertEquals(new BigDecimal("45.69"), attribute2.get("123"));
     DoEntity attribute3 = marshalled.get("mapAttribute3", DoEntity.class);
     assertEquals(DATE, IValueFormatConstants.parseDefaultDate.apply(attribute3.get(UUID_1.toString())));
     DoEntity attribute4 = marshalled.get("mapAttribute4", DoEntity.class);
@@ -2242,7 +2242,7 @@ public class JsonDataObjectsSerializationTest {
   public void testSerializeDeserialize_EntityIDataObject() throws Exception {
     DoEntity entity = BEANS.get(DoEntity.class);
     entity.put("stringAttribute", "value-string");
-    entity.put("doubleAttribute", 1234567.89);
+    entity.put("doubleAttribute", new BigDecimal("1234567.89"));
     entity.put("itemDoAttribute", createTestItemDo("id", "value"));
 
     IDataObject dataObject = entity;
